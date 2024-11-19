@@ -1,25 +1,31 @@
 name: deploy 
 on:
-  workflow_dispatch: 
   push:
     branches:
-      - main # 根据实际的分支情况设置
-permissions:
-  contents: write
+      - main
+  schedule:
+    - cron: '0 0 * * 2,4,6'
+
 jobs:
   deploy:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Check branch
+        uses: actions/checkout@v4
+      
+      - name: Git config
+        run: |
+          git config --global user.name "jygzyc"
+          git config --global user.email "jyg.zyc@outlook.com"
+      - name: Git pull
+        run: git pull
+
+      - name: Setup python
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV 
-      - uses: actions/cache@v3
-        with:
-          key: mkdocs-material-${{ env.cache_id }}
-          path: .cache
-          restore-keys: |
-            mkdocs-material-
-      - run: pip install mkdocs-material 
-      - run: mkdocs gh-deploy --force
+          python-version: '3.11'
+    
+      - name: Install requirements
+        run: pip install requests python-slugify pytz
+

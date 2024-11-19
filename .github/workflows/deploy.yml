@@ -1,5 +1,7 @@
 name: deploy 
 on:
+  discussion_comment:
+    types: [created, deleted]
   push:
     branches:
       - main

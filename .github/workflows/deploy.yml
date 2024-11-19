@@ -1,7 +1,8 @@
 name: deploy 
 on:
-  discussion_comment:
-    types: [created, deleted]
+  workflow_dispatch:
+  discussion:
+    types: [created, edited, answered]
   push:
     branches:
       - main

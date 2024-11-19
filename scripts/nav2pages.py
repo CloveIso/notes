@@ -14,8 +14,9 @@ def converter(d, out_dir):
         
         if isinstance(value, dict):
             converter(d=value, out_dir=out_dir)
-
-        title = key.split("-")
+        print("key is :" key)
+        # title = key.split("-")
+        title = key
         if len(title) > 1:
             content = "title: {}".format(title[1])
             target_dir = Path(out_dir).joinpath(d[key])

@@ -18,7 +18,8 @@ def converter(d, out_dir):
         # title = key.split("-")
         title = key
         if len(title) > 1:
-            content = "title: {}".format(title[1])
+            # content = "title: {}".format(title[1])
+            content = "title: {}".format(title)
             target_dir = Path(out_dir).joinpath(d[key])
             if target_dir.exists():
                 for i in target_dir.glob(filename):

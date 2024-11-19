@@ -1,5 +1,6 @@
 name: deploy 
 on:
+  workflow_dispatch: 
   push:
     branches:
       - main # 根据实际的分支情况设置

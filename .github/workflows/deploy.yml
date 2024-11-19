@@ -6,7 +6,6 @@ on:
       - main
   schedule:
     - cron: '0 0 * * 2,4,6'
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -17,8 +16,8 @@ jobs:
       
       - name: Git config
         run: |
-          git config --global user.name "jygzyc"
-          git config --global user.email "jyg.zyc@outlook.com"
+          git config --global user.name "CloveIso"
+          git config --global user.email "1258511864@qq.com"
       - name: Git pull
         run: git pull
 
@@ -29,4 +28,38 @@ jobs:
     
       - name: Install requirements
         run: pip install requests python-slugify pytz
+
+      - name: Get all discussions
+        run: python scripts/queryDiscussions.py -r CloveIso/notes -t ${{ secrets.PERSONAL_NOTE_ACCESS_TOKEN }} -o discussions
+      
+      - name: Generate pages navigation
+        run: python scripts/nav2pages.py -n nav.json -o docs
+
+      - name: Generate markdown posts
+        run: python scripts/discussionFileConverter.py -i discussions -o docs -n nav.json
+    
+      - name: Commit files
+        run: |
+          current="`TZ=UTC-8 date +'%Y-%m-%d %H:%M:%S'`"
+          message="Add Changes By GitHub Actions: $current (CST/UTC-8)"
+          echo "$message" > update.log          
+          git add --all
+          git commit -a -m "$message"
+        
+      - name: Push Changes
+        uses: ad-m/github-push-action@master
+        with: 
+            github_token: ${{ secrets.PERSONAL_NOTE_ACCESS_TOKEN }}
+            branch: main
+
+      - uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${ env.cache_id }
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - run: pip install -r requirements.txt
+      - run: mkdocs gh-deploy --force
+
 

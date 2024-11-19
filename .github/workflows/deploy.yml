@@ -16,8 +16,8 @@ jobs:
       
       - name: Git config
         run: |
-          git config --global user.name "jygzyc"
-          git config --global user.email "jyg.zyc@outlook.com"
+          git config --global user.name "CloveIso"
+          git config --global user.email "1258511864@qq.com"
       - name: Git pull
         run: git pull
 
@@ -30,7 +30,7 @@ jobs:
         run: pip install requests python-slugify pytz
 
       - name: Get all discussions
-        run: python scripts/queryDiscussions.py -r jygzyc/notes -t ${{ secrets.PERSONAL_NOTE_ACCESS_TOKEN }} -o discussions
+        run: python scripts/queryDiscussions.py -r CloveIso/notes -t ${{ secrets.PERSONAL_NOTE_ACCESS_TOKEN }} -o discussions
       
       - name: Generate pages navigation
         run: python scripts/nav2pages.py -n nav.json -o docs

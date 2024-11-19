@@ -93,6 +93,7 @@ def _main():
     while has_next_page:
         query = _make_query(gh_owner, gh_repo_name, end_cursor)
         results = _request_discussions(url_graphql, headers, query)
+        print("The value of results is:", results)
         temp_discussion = results['nodes']
         has_next_page = results['pageInfo']['hasNextPage']
         end_cursor = results['pageInfo']['endCursor']

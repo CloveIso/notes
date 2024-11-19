@@ -14,7 +14,7 @@ def converter(d, out_dir):
         
         if isinstance(value, dict):
             converter(d=value, out_dir=out_dir)
-        print("key is :" key)
+        print("key is :" + key)
         # title = key.split("-")
         title = key
         if len(title) > 1:

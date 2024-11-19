@@ -9,8 +9,8 @@ def converter(d, out_dir):
     filename = ".pages"
     for key, value in d.items():
         # skip site and blog 
-        if int(key[:2]) == 0 or int(key[:2]) == 9:
-            continue
+        # if int(key[:2]) == 0 or int(key[:2]) == 9:
+        #     continue
         
         if isinstance(value, dict):
             converter(d=value, out_dir=out_dir)

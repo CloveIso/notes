@@ -10,13 +10,6 @@ import os
 
 from slugify import slugify
 
-closed_comments_list = [5]
-
-
-
-class TestConverterMethods(unittest.TestCase):
-
-  
 
 def _md_filename_generator(discussion, flag):
     match flag:
@@ -69,7 +62,7 @@ def _md_meta_generator(discussion: dict, md_name, md_path):
                     f'authors: [{discussion["author"]["login"]}]\n'
                     f'comments: {_is_comment_open(discussion)}\n'
                     f'---\n\n')
-    elif int(category_num_prefix) == 1:
+    elif int(category_num_prefix) == 9:
         # generate blog pages metadata
         slug = "blog/discussion-{0}".format(discussion["number"])
         metadata = (f'---\n'
@@ -171,3 +164,4 @@ def _main():
 if __name__ == "__main__":
     # unittest.main()
     _main()
+    

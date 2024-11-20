@@ -10,8 +10,114 @@ import os
 
 from slugify import slugify
 
+########################
+# Comment Configuration
+########################
+closed_comments_list = [5]
+
+def _is_comment_open(discussion: dict):
+    """
+    Check if comments are open for a given discussion.
+    
+    Parameters:
+    - discussion (dict): A dictionary representing the discussion object,
+                        which must include a 'number' key.
+    
+    Returns:
+    - str: "false" if the discussion number is in the closed_comments_list,
+           or "true" otherwise.
+    
+    Description:
+    This function determines whether comments should be open or closed for a
+    specific discussion based on its number. It checks if the discussion number
+    is present in the closed_comments_list. If it is, the function returns "false",
+    indicating that comments are closed. If not, it returns "true", indicating
+    that comments are open.
+    """
+    number = discussion["number"]
+    return "false" if number in closed_comments_list else "true"
+
+
+@unique
+class MdType(Enum):
+    """
+    MdType defines the different types of markdown filename labels as enum members.
+    
+    Attributes:
+    - PRESET: Represents a preset filename for the markdown file.
+    - SPECIFIC: Represents a specific filename for the markdown file.
+    """
+    PRESET = 1
+    SPECIFIC = 2
+
+
+class TestConverterMethods(unittest.TestCase):
+
+    def setUp(self):
+        with open("discussions", "r", encoding="utf-8") as f:
+            self.discussions_data = eval(f.read())
+        if not self.discussions_data:
+            assert "discussion test data error"
+        with open("nav.json", "r", encoding="utf-8") as f:
+            self.nav_data = json.load(f)
+        if not self.nav_data:
+            assert "nav_data test error"
+
+    def test__md_filename_generator(self):
+        if 'nodes' in self.discussions_data.keys():
+            discussions_list = self.discussions_data['nodes']
+            for discussion in discussions_list:
+                if not discussion:
+                    continue
+                discussion_title = discussion['title']
+                if discussion_title == "留言板":
+                    self.assertEqual(_md_filename_generator(discussion, MdType.SPECIFIC), "site-message.md")
+                if discussion_title == "JavaScript基础":
+                    self.assertEqual(_md_filename_generator(discussion, MdType.PRESET), "javascript-base.md")
+
+    def test__md_directory_generator(self):
+        if 'nodes' in self.discussions_data.keys():
+            discussions_list = self.discussions_data['nodes']
+            for discussion in discussions_list:
+                if not discussion:
+                    continue
+                discussion_title = discussion['title']
+                if discussion_title == "留言板":
+                    self.assertEqual(_md_directory_generator(discussion, self.nav_data), ".")
+                if discussion_title == "JavaScript基础":
+                    self.assertEqual(_md_directory_generator(discussion, self.nav_data), "technology/program/js/") 
+
+    def test__md_meta_generator(self):
+        if 'nodes' in self.discussions_data.keys():
+            discussions_list = self.discussions_data['nodes']
+            for discussion in discussions_list:
+                if not discussion:
+                    continue
+                discussion_title = discussion['title']
+                if discussion_title == "留言板":
+                    print(_md_meta_generator(discussion, 
+                                             _md_filename_generator(discussion, flag=MdType.SPECIFIC),
+                                             _md_directory_generator(discussion, self.nav_data)))
+                if discussion_title == "JavaScript基础":
+                    print(_md_meta_generator(discussion, 
+                                             _md_filename_generator(discussion, flag=MdType.PRESET),
+                                             _md_directory_generator(discussion, self.nav_data))) 
 
 def _md_filename_generator(discussion, flag):
+    """
+    Generate a markdown filename based on the content and flag provided.
+    
+    Parameters:
+    - discussion: discussion node.
+    - flag: Determines the logic for generating the filename. Can be 'MdType.PRESET', 'MdType.SPEC', or other.
+    
+    Returns:
+    - str: A string representing the generated markdown filename.
+    
+    Description:
+    This function is designed to create a filename for a markdown file based on the discussion content and a given flag.
+    It uses regular expressions to extract specific parts of the discussion text and slugifies them to create a valid filename.
+    """
     match flag:
         case MdType.PRESET:
             discussion_body = discussion["body"]
@@ -29,6 +135,24 @@ def _md_filename_generator(discussion, flag):
             return f'{slugify(discussion["title"])}.md'
 
 def _md_directory_generator(discussion, nav):
+    """
+    Generate a markdown directory path based on navigation and discussion object.
+    
+    Parameters:
+    - discussion: A dictionary containing information about the github discussion.
+    - nav: A json mapping numerical prefixes to their corresponding
+                       directory paths.
+    
+    Returns:
+    - str or None or False: The generated markdown directory path if found, or return 
+                        None. When the exception occurs, return False.
+    
+    Description:
+    This function determines the appropriate directory for a markdown file based on
+    the discussion's category name and labels. It uses regular expressions to extract
+    numerical prefixes and then looks up the corresponding directory path in the
+    provided navigation dictionary.
+    """
     try:
         category_num, _ = discussion['category']['name'].split("-")
         category = discussion['category']['name']
@@ -47,6 +171,22 @@ def _md_directory_generator(discussion, nav):
         return False
 
 def _md_meta_generator(discussion: dict, md_name, md_path):
+    """
+    Generate markdown metadata for a given discussion object.
+    
+    Parameters:
+    - discussion: A dictionary containing information about the github discussion.
+    - md_name: Markdown file name generated by `_md_filename_generator()` function.
+    - md_path: Markdown file path generated by `_md_directory_generator()` function
+    
+    Returns:
+    - str: A string of markdown formatted metadata.
+    
+    Description:
+    This function creates markdown metadata (YAML front matter) for a discussion object.
+    It constructs the metadata based on the category number of the discussion. The category
+    number determines the structure and content of the metadata.
+    """
     category_num_prefix = discussion['category']['name'][:2]
     md_name, _ = os.path.splitext(os.path.basename(md_name)) #if md_name[-3:] == ".md" else md_name
     
@@ -62,7 +202,7 @@ def _md_meta_generator(discussion: dict, md_name, md_path):
                     f'authors: [{discussion["author"]["login"]}]\n'
                     f'comments: {_is_comment_open(discussion)}\n'
                     f'---\n\n')
-    elif int(category_num_prefix) == 9:
+    elif int(category_num_prefix) == 1:
         # generate blog pages metadata
         slug = "blog/discussion-{0}".format(discussion["number"])
         metadata = (f'---\n'

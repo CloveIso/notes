@@ -4,7 +4,7 @@ url: https://github.com/CloveIso/notes/discussions/2
 number: 2
 slug: site-message/
 created: 2024-11-20
-updated: 2024-11-20
+updated: 2024-11-21
 authors: [CloveIso]
 comments: true
 ---

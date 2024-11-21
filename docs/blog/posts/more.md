@@ -17,11 +17,11 @@ comments: true
 
 作为一个关键系统应用，系统设置拥有跨用户权限，此漏洞中的一个 Fragment 接收外部传递的 user handle 而没有任何输入校验和权限检查，然后直接开始使用这个 user handle，这样就使得攻击者可以利用一个低权限的恶意应用，打开 Settings 并传入其他用户的 handle，让高权限的 Settings 错误访问和操作其他用户的数据。
 
+<!-- more -->
+
 CVE-2023-21107漏洞补丁：[Enforce INTERACT_ACROSS_USERS_FULL permission for NotificationAccessDetails](https://android.googlesource.com/platform/packages/apps/Settings/+/179e5ce2a521710992b5ebdb2d88e0c3b3f2c12b^!/#F0)
 
 CVE-2024-43088漏洞补丁：[Checks cross user permission before handling intent](https://android.googlesource.com/platform/packages/apps/Settings/+/975c28535419be1cc45f66712f41e4a7a40e6001)
-
-<!-- more -->
 
 ## CVE-2024-43088分析
 

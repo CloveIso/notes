@@ -9,7 +9,7 @@ date:
 created: 2024-11-19
 updated: 2024-11-21
 authors: [Cloveiso]
-categories: []
+categories: ['杂项']
 comments: true
 ---
 
